@@ -13,6 +13,8 @@ import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
+import java.util.Collection;
+
 /**
  * @author Joseph Hirschfeld
  * @date 12/31/2015
@@ -29,7 +31,15 @@ public final class OnlineForwardPluginMessagingForwardingSource extends Abstract
 
     @Override
     public void forward(Vote v) {
-        ProxiedPlayer p = ProxyServer.getInstance().getPlayer(v.getUsername());
+        Collection<ProxiedPlayer> plist = ProxyServer.getInstance().getPlayers();
+        String name = v.getUsername().toLowerCase();
+        ProxiedPlayer p = null;
+        for (ProxiedPlayer player : plist) {
+            if(player.getName().toLowerCase().equals(name)) {
+                p = player;
+                break;
+            }
+        }
         if (p != null && p.getServer() != null &&
                 serverFilter.isAllowed(p.getServer().getInfo().getName())) {
             if (forwardSpecific(new BungeeBackendServer(p.getServer().getInfo()), v)) {
